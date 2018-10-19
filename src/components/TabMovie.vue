@@ -1,12 +1,17 @@
 <template>
     <div class="columns is-multiline">
-        <div class="card column is-4" v-for="movie in movies" :key="movie.id">
-            <div class="card-image">
-                <iframe :src="embedable(movie.url)" width="100%" height="200"></iframe>
-            </div>
+        <div class="column is-4" v-for="movie in movies" :key="movie.id">
+            <div class="card">
+                <div class="card-image">
+                    <iframe :src="embedable(movie.url)" width="100%" height="200"></iframe>
+                </div>
 
-            <div class="content">
-                {{ movie.title }}
+                <div class="content">
+                    {{ movie.title }}
+                </div>
+                <div class="card-footer">
+                    <a @click="deleteMovie(movie)" class="card-footer-item button is-danger">Delete</a>
+                </div>
             </div>
         </div>
     </div>
@@ -23,19 +28,22 @@
         },
         data () {
             return {
-                movies: []
+                movies: [],
             }
         },
         mounted () {
             if(this.$props.category === 'Newest') {
                 for(let i = 0; i < this.$props.categories.length; i++) {
-                    this.db.collection('categories').doc(this.$props.categories[i].id).collection('movies').get()
+                    const categoryID = this.$props.categories[i].id
+                    this.db.collection('categories').doc(categoryID).collection('movies').get()
                         .then((querySnapshot) => {
                             querySnapshot.forEach((collection) => {
                                 if(this.movies.length < 7) {
                                     this.movies.push({
                                         title: collection.data().title,
-                                        url: collection.data().url
+                                        url: collection.data().url,
+                                        id: collection.id,
+                                        category: categoryID
                                     })
                                 }
                             })
@@ -54,6 +62,25 @@
             embedable (url) {
                 console.log(url.split('=')[1])
                 return 'https://youtube.com/embed/' + url.split('=')[1]
+            },
+            deleteMovie(movie) {
+                if(this.$props.category === 'Newest') {
+                    this.db.collection('categories').doc(movie.category).collection('movies').doc(movie.id).delete()
+
+                    let index
+
+                    for(let i = 0; i < this.movies.length; i++) {
+                        if(movie.id === this.movies[i].id) {
+                            index = i
+
+                            break
+                        }
+                    }
+
+                    this.movies.splice(index, 1)
+                } else {
+                    this.collection('categories').doc(this.$props.category).collection('movies').doc(movie.id).delete()
+                }
             }
         }
     }

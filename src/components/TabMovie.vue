@@ -1,5 +1,25 @@
 <template>
     <div class="columns is-multiline">
+        <div class="column is-12">
+            <button class="button is-primary" @click="showCategoryForm = !showCategoryForm">Edit Category</button>
+        </div>
+
+        <div class="modal" :class="{ 'is-active' : showCategoryForm  }">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <form @submit.prevent="saveCategory">
+                    <div class="field">
+                        <input type="text" class="input" v-model="title">
+                    </div>
+
+                    <div class="field">
+                        <button class="button is-success">Save</button>
+                    </div>
+                </form>
+            </div>
+            <button class="modal-close is-large" aria-label="close" @click="showCategoryForm = !showCategoryForm"></button>
+        </div>
+
         <div class="column is-4" v-for="movie in movies" :key="movie.id">
             <div class="card">
                 <div class="card-image">
@@ -24,11 +44,14 @@
         name: 'TabMovie',
         props: {
             category: String,
-            categories: Array
+            categories: Array,
+            categorytitle: String
         },
         data () {
             return {
                 movies: [],
+                title: '',
+                showCategoryForm: false,
             }
         },
         mounted () {
@@ -49,6 +72,8 @@
                             })
                         })
                 }
+            } else {
+                this.title = this.$props.categorytitle
             }
         },
         firestore () {
@@ -62,6 +87,16 @@
             embedable (url) {
                 console.log(url.split('=')[1])
                 return 'https://youtube.com/embed/' + url.split('=')[1]
+            },
+            saveCategory() {
+                const category = {
+                    title: this.title
+                }
+
+                this.db.collection('categories').doc(this.$props.category).update(category)
+                    .catch(error => error = error.message)
+
+                this.$emit('updateCategory', this.title)
             },
             deleteMovie(movie) {
                 if(this.$props.category === 'Newest') {

@@ -33,6 +33,7 @@
                             </p>
                         </div>
 
+
                         <div class="field" v-else>
                             <div class="field is-grouped">
                                 <p class="control">
@@ -50,6 +51,13 @@
                 </div>
             </div>
         </nav>
+
+
+        <!--
+        <div v-if="!isAuthenticated" class="header-container">
+            <h1 class="header">An easy to use Youtube-categorizer</h1>
+            <h1 class="header"> made with Vue.js</h1>
+        </div> -->
 
         <div class="modal" :class="{ 'is-active' : showCategoryForm  }">
             <div class="modal-background"></div>
@@ -127,6 +135,7 @@
                     this.isAuthenticated = true
                 }
             })
+            //this.$router.push('/dashboard')
         },
         methods: {
             addCategory() {
@@ -155,7 +164,6 @@
                     this.showMovieForm = false
                 } else {
                     alert("You need to fill out all the fields!")
-                    console.log(this.title + " " + this.url)
                 }
             },
             logout () {
@@ -169,24 +177,33 @@
     }
 </script>
 
-<style lang="scss">
-    @import "../node_modules/bulma/css/bulma.css";
+<style lang="sass">
+    @import "../node_modules/bulma/css/bulma.css"
 
-    #app {
-        font-family: 'Avenir', Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-align: center;
-        color: #2c3e50;
-    }
-    #nav {
-        padding: 30px;
-        a {
-            font-weight: bold;
-            color: #2c3e50;
-            &.router-link-exact-active {
-                color: #42b983;
-            }
-        }
-    }
+    #app
+        font-family: 'Aileron', Helvetica, Arial, sans-serif
+        -webkit-font-smoothing: antialiased
+        -moz-osx-font-smoothing: grayscale
+        text-align: center
+        color: #2c3e50
+        h1
+            font-size: calc(2rem + 24 * ((100vw - 570px) / 500))
+
+
+    #nav
+        padding: 30px
+        a
+            font-weight: bold
+            color: #2c3e50
+            &.router-link-exact-active
+                color: #42b983
+
+    .header-container
+        display: flex
+        flex-direction: column
+        h1
+
+
+
+
 </style>

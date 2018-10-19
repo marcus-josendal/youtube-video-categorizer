@@ -12,9 +12,17 @@
         </div>
 
         <tab-movie
+                category="Newest"
+                v-if="activeCategory === 'Newest'"
+                :categories="categories">
+        </tab-movie>
+
+
+        <tab-movie
                 v-for="category in categories"
                 :key="category.id"
-                :category="category.id">
+                :category="category.id"
+                v-if="activeCategory === category.title">
         </tab-movie>
     </div>
 

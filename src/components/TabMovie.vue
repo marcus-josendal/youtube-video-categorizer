@@ -18,16 +18,36 @@
         inject: ['db'],
         name: 'TabMovie',
         props: {
-            category: String
+            category: String,
+            categories: Array
         },
         data () {
             return {
                 movies: []
             }
         },
+        mounted () {
+            if(this.$props.category === 'Newest') {
+                for(let i = 0; i < this.$props.categories.length; i++) {
+                    this.db.collection('categories').doc(this.$props.categories[i].id).collection('movies').get()
+                        .then((querySnapshot) => {
+                            querySnapshot.forEach((collection) => {
+                                if(this.movies.length < 7) {
+                                    this.movies.push({
+                                        title: collection.data().title,
+                                        url: collection.data().url
+                                    })
+                                }
+                            })
+                        })
+                }
+            }
+        },
         firestore () {
-            return {
-                movies: this.db.collection('categories').doc(this.$props.category).collection('movies')
+            if(this.$props.category !== 'Newest') {
+                return {
+                    movies: this.db.collection('categories').doc(this.$props.category).collection('movies')
+                }
             }
         },
         methods: {
